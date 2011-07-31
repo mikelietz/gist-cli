@@ -4,6 +4,7 @@ from ConfigParser import ConfigParser
 import os.path
 import urllib2
 import json
+import base64
 
 def main():
   parser = argparse.ArgumentParser( description = 'Create a github gist from a file.' )
@@ -22,14 +23,12 @@ def main():
   username = gitconfig.get( "github", "user" )
   password = gitconfig.get( "github", "password" )
 
-  # Build an HTTP Client with the HTTPBasic Authentication built in
-  password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  password_mgr.add_password( None, uri, username, password )
-  handler = urllib2.HTTPBasicAuthHandler( password_mgr )
-  opener = urllib2.build_opener( handler )
-  urllib2.install_opener( opener )
-
   request = urllib2.Request( "%s/gists" % (uri) )
+
+  raw = "%s:%s" % (username, password)
+  auth = 'Basic %s' % base64.b64encode(raw).strip()
+  request.add_header('authorization', auth)
+
   request.add_data( json.dumps( {
       "description": arguments.description,
       "public": arguments.private,
