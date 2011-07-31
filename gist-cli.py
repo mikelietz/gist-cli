@@ -4,18 +4,23 @@ from ConfigParser import ConfigParser
 import os.path
 import urllib2
 import json
+import sys
 import base64
 
 def main():
-  parser = argparse.ArgumentParser( description = 'Create a github gist from a file.' )
-  parser.add_argument( 'infile_list', nargs = '+', type = argparse.FileType( 'r' ) )
+  parser = argparse.ArgumentParser( description = 'Create a github gist from a file, or from stdin' )
+  parser.add_argument( 'infile_list', nargs = '*', type = argparse.FileType( 'r' ))
   parser.add_argument( '--description', '-d', default = '' )
   parser.add_argument( '--private', '-p', action = 'store_true', default = False ) # not used yet.
   arguments = parser.parse_args()
-
-  for infile in arguments.infile_list:
-     file_name = infile.name
-     file_data = infile.read()
+  
+  
+  if len(arguments.infile_list) > 0:
+      files = {}
+      for infile in arguments.infile_list:
+         files[infile.name] = {"content": infile.read()}
+  else:
+      files = {"stdin": {"content": sys.stdin.read()}}
 
   uri = "https://api.github.com"
   gitconfig = ConfigParser()
@@ -32,11 +37,7 @@ def main():
   request.add_data( json.dumps( {
       "description": arguments.description,
       "public": arguments.private,
-      "files": {
-          file_name: {
-              "content": file_data,
-          },
-      },
+      "files": files,
   }))
 
   response = urllib2.urlopen( request )
