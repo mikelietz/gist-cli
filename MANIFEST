@@ -1,0 +1,6 @@
+LICENSE.bsd
+MANIFEST.in
+README.rst
+setup.py
+gist_cli.py
+bin/mkgist
