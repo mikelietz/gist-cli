@@ -12,7 +12,7 @@ except ImportError:
 setup(
     name='gist-cli',
     version='0.1',
-    author='Mike Leitz, Issac Kelly',
+    author='Mike Lietz, Issac Kelly',
     url='http://github.com/mikelietz/gist-cli',
     description='Create Github Gist from files or stdin',
     package_dir={'': '.'},
